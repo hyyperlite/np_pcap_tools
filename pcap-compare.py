@@ -116,8 +116,8 @@ for f in files_pcap2:
         print(f'Notice: file "{f}" in pcap_dir2 file extension not ".pcap": SKIPPING')
         files_pcap2.remove(f)
 
-print(f'INFO: # files in "main" pcap dir (pcap1): {leng(files_pcap1)}')
-print(f'INFO: # files in "match" pcap dir (pcap2): {leng(files_pcap2)}')
+print(f'INFO: # files in "main" pcap dir (pcap1): {len(files_pcap1)}')
+print(f'INFO: # files in "match" pcap dir (pcap2): {len(files_pcap2)}')
 
 # Just informational, display  the files found in each defined pcap directory
 if list_pcap_files:
@@ -155,7 +155,7 @@ for p1_count, f1 in enumerate(files_pcap1):
         matched_pkt_keys = set()
         missing_pkt_keys = set()
 
-        print(f'  ######## Reading {f2} to memory. ', end='')
+        print(f'     ##### Reading {f2} to memory. ', end='')
         # Use scapy redcap() to read pcap (or pcapng) to memory as scapy.plist.PacketList
         pkt_list2 = rdpcap(f'{pcap2_dir}/{f2}')
         print(f'Number of packets: {len(pkt_list2)}')
@@ -184,8 +184,9 @@ for p1_count, f1 in enumerate(files_pcap1):
                     del p1_dict[k]
 
             print(f'      Valid Packets to Check: {len(tmp_p1_dict)}')
-            print(f'      Number of matched packets: {len(matched_pkt_keys)}')
+            print(f'      Number of matched packets this run: {len(matched_pkt_keys)}')
             total_matched_pkts += len(matched_pkt_keys)
+            print(f'      Total matched packets for all runs: {total_matched_pkts}')
 
             # check modifications that have been made to the "main" p1_dict (verifying packets are removed if matched)
             if debug:
@@ -225,7 +226,7 @@ if do_compare:
     print(f'Total Packets Checked: {total_checked_pkts}')
     print(f'Total Matched Packets: {total_matched_pkts}')
     print(f'Total Missing Packets: {total_checked_pkts - total_matched_pkts}')
-    print(f'Percent Packet Drop: {(total_checked_pkts - total_matched_pkts) / total_checked_pkts}%')
+    print(f'Percent Packet Drop: {round(((total_checked_pkts - total_matched_pkts) / total_checked_pkts) * 100, 12)}%')
 print('#############################################')
 # Print out total run time
 if track_time:
@@ -233,13 +234,19 @@ if track_time:
 
 if missing_pkts_to_pcap and do_compare:
     # If enabled, write missing packets to new pcap file
-    now = datetime.datetime.now()
-    try:
-        wrpcap(f'{results_dir}/missing_pkts-{now.strftime("%Y-%m-%d_%H-%M")}.pcap', missing_pkt_list)
-    except Exception as e:
-        print(e)
-        print(f'Error: Unable to open pcap file for writing at {results_dir}')
+    if not len(missing_pkt_list) > 0:
+        print('No missing packets to write to pcap: skipping')
     else:
-        print(f'Missing Packets PCAP successfully written to: '
+        now = datetime.datetime.now()
+
+        print(f'Start writing missing Packets PCAP: '
               f'{results_dir}/missing_pkts-{now.strftime("%Y-%m-%d_%H-%M")}.pcap')
+        try:
+            wrpcap(f'{results_dir}/missing_pkts-{now.strftime("%Y-%m-%d_%H-%M")}.pcap', missing_pkt_list)
+        except Exception as e:
+            print(e)
+            print(f'Error: Unable to write to pcap file in dir: {results_dir}')
+        else:
+            print(f'Success writing pcap: '
+                  f'{results_dir}/missing_pkts-{now.strftime("%Y-%m-%d_%H-%M")}.pcap')
                                                                                                                                                                                                                                                                                                                                                                                                               # wrpcap(f'{results_dir}/missing_packets.pcap', missing_packets)

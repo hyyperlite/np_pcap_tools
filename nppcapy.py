@@ -5,6 +5,25 @@
 from scapy.all import *
 
 
+def check_tcp_flags(pkt):
+    match pkt['TCP'].flags:
+        case 0x01:
+            return 'FIN'
+        case 0x02:
+            return 'SYN'
+        case 0x04:
+            return 'RST'
+        case 0x08:
+            return 'PSH'
+        case 0x10:
+            return 'ACK'
+        case 0x20:
+            return 'URG'
+        case 0x40:
+            return 'ECE'
+        case 0x80:
+            return 'CWR'
+
 def check_packet_attributes(pkt: scapy.layers.l2.Ether, pkt_label='pkt', debug=False):
     """
     :param pkt: scapy packet from rdpcap read of pcap file

@@ -55,6 +55,7 @@ tcp_flag_other = 0
 tcp_flag_sum = 0
 tcp_reset_pkt_list = []
 tcp_retrans_pkt_list = []
+session_count = 0
 
 tcp_other_list = []
 
@@ -93,6 +94,7 @@ for f_count, f1 in enumerate(files_pcap):
         sys.exit(1)
 
     print(f'Number of packets: {len(pkt_list)}')
+    session_count += len(pkt_list.sessions())
 
     for pkt in pkt_list:
         if check_packet_attributes(pkt):
@@ -160,6 +162,7 @@ print(f'  TCP Other...............{tcp_flag_other}')
 print(f'Total UDP Packets......{udp_pkt_count}')
 print(f'Total ICMP Packets.....{icmp_pkt_count}')
 print(f'Total ICMPv6 Packets...{icmpv6_pkt_count}')
+print(f'Total Sessions.........{session_count}  [may be inaccurate across split pcaps]')
 print('##################')
 
 if track_time:

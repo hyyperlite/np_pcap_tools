@@ -134,7 +134,7 @@ if list_pcap_files:
 # Start processing of each file in pcap_dir1 ########################################
 for p1_count, f1 in enumerate(files_pcap1):
 
-    print(f'######## Reading {f1} to memory. ', end='')
+    print(f'###### ({p1_count +1} of ({len(files_pcap1)}) Reading {f1} to memory. ', end='')
     # Use scapy rdpcap() to read pcap (or pcapng) to memory as scapy.plist.PacketList
     try:
         pkt_list1 = rdpcap(f'{pcap1_dir}/{f1}')
@@ -155,7 +155,7 @@ for p1_count, f1 in enumerate(files_pcap1):
         matched_pkt_keys = set()
         missing_pkt_keys = set()
 
-        print(f'     ##### Reading {f2} to memory. ', end='')
+        print(f'  #### ({p2_count +1} of ({len(files_pcap2)}) Reading {f2} to memory. ', end='')
         # Use scapy redcap() to read pcap (or pcapng) to memory as scapy.plist.PacketList
         pkt_list2 = rdpcap(f'{pcap2_dir}/{f2}')
         print(f'Number of packets: {len(pkt_list2)}')
